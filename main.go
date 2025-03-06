@@ -12,16 +12,15 @@ import (
 
 func main() {
 	app := fiber.New()
+  app.Use(logger.New(logger.Config{
+    Format: "[${ip}]:${port} ${status} - ${method} ${path}\n",
+  }))
+
 	environments := config.LoadEnviroments()
 	db := config.InitDB(environments)
-
 	userRepo := repository.NewUserRepository(db)
-
 	userHanlder := handlers.NewUserHandler(userRepo)
-
 	routes.SetUpUserRouters(app, userHanlder)
-
-	app.Use(logger.New())
 
 	app.Listen(":3001")
 }

@@ -14,11 +14,15 @@ func NewUserRepository(db *gorm.DB) *UserRespository {
 	return &UserRespository{db: db}
 }
 
-func (r *UserRespository) Create(user *models.User) error {
-	return r.db.Create(user).Error
+func (r *UserRespository) Create(user *models.User) (*models.User, error) {
+  error := r.db.Create(user).Error
+  if error != nil{
+    return nil,error
+  }
+  return user,nil
 }
 
-func (r *UserRespository) FindById(id int) (*models.User, error) {
+func (r *UserRespository) FindById(id uint) (*models.User, error) {
 	var user models.User
 	error := r.db.Preload("Role").First(&user, id).Error
 	if error != nil {
@@ -33,8 +37,12 @@ func (r *UserRespository) FindAll() ([]models.User, error) {
 	return users, error
 }
 
-func (r *UserRespository) Update(user *models.User) error {
-	return r.db.Save(user).Error
+func (r *UserRespository) Update(user *models.User) (*models.User, error) {
+  error := r.db.Save(user).Error
+  if error != nil{
+    return nil,error
+  }
+  return user,nil
 }
 
 func (r *UserRespository) Detele(id int) error {

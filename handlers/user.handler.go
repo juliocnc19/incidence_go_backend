@@ -18,18 +18,33 @@ func (s *UserHandler) CreateUser(input dto.CreateUserDto) (*models.User, error) 
 	user := &models.User{
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
+		Password:  input.Password,
 		Email:     input.Email,
 		Username:  input.Username,
 		AvatarURL: input.AvatarURL,
 		RoleID:    input.RoleID,
 	}
-	error := s.repo.Create(user)
-	if error != nil {
-		return nil, error
-	}
-	return user, nil
+	return s.repo.Create(user)
 }
 
 func (s *UserHandler) GetAllUsers() ([]models.User, error) {
 	return s.repo.FindAll()
+}
+
+func (s *UserHandler) GetUserById(id uint) (*models.User, error) {
+	return s.repo.FindById(id)
+}
+
+func (s *UserHandler) UpdateUser(id uint, input dto.UpdateUserDto) (*models.User, error) {
+	user := &models.User{
+		ID:        id,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Email:     input.Email,
+		Password:  input.Password,
+		Username:  input.Username,
+		AvatarURL: input.AvatarURL,
+		RoleID:    input.RoleID,
+	}
+	return s.repo.Update(user)
 }
