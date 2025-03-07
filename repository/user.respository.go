@@ -34,7 +34,10 @@ func (r *UserRespository) FindById(id uint) (*models.User, error) {
 func (r *UserRespository) FindAll() ([]models.User, error) {
 	var users []models.User
 	error := r.db.Preload("Role").Find(&users).Error
-	return users, error
+  if error != nil{
+    return nil, error
+  }
+	return users, nil
 }
 
 func (r *UserRespository) Update(user *models.User) (*models.User, error) {
@@ -45,6 +48,15 @@ func (r *UserRespository) Update(user *models.User) (*models.User, error) {
   return user,nil
 }
 
-func (r *UserRespository) Detele(id int) error {
-	return r.db.Delete(&models.User{}, id).Error
+func (r *UserRespository) Detele(id int) (map[string]interface{}, error) {
+  error := r.db.Delete(&models.User{}, id).Error
+  if error != nil{
+    return nil, error
+  }
+  resutl := map[string]interface{}{
+    "ok":true,
+    "message":"Usuario Eliminado con exito",
+    "id":id,
+  }
+  return resutl,nil
 }

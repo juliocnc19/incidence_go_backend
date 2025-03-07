@@ -13,14 +13,23 @@ import (
 func main() {
 	app := fiber.New()
   app.Use(logger.New(logger.Config{
-    Format: "[${ip}]:${port} ${status} - ${method} ${path}\n",
+    Format: "[${ip}] ${status} - ${method} ${path} - ${latency}\n",
   }))
-
+  
+  //db
 	environments := config.LoadEnviroments()
 	db := config.InitDB(environments)
+  
+  //Repository
 	userRepo := repository.NewUserRepository(db)
-	userHanlder := handlers.NewUserHandler(userRepo)
-	routes.SetUpUserRouters(app, userHanlder)
+  incidentRepo := repository.NewIncidentRepository(db)
+  
+  //Handler
+	userHandler := handlers.NewUserHandler(userRepo)
+  handlers.NewIncidentHandler(incidentRepo)
+  
+  //Routers
+	routes.SetUpUserRouters(app, userHandler)
 
 	app.Listen(":3001")
 }

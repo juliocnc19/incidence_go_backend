@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"incidence_grade/dto"
+	"incidence_grade/dto/users"
 	"incidence_grade/models"
 	"incidence_grade/repository"
 )
@@ -47,4 +47,8 @@ func (s *UserHandler) UpdateUser(id uint, input dto.UpdateUserDto) (*models.User
 		RoleID:    input.RoleID,
 	}
 	return s.repo.Update(user)
+}
+
+func (s *UserHandler) DeleteUser(id int) (map[string]interface{}, error){
+  return s.repo.Detele(id)
 }

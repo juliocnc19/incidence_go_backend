@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"incidence_grade/dto"
+	"incidence_grade/dto/users"
 	"incidence_grade/handlers"
 	"incidence_grade/utils"
 	"strconv"
@@ -79,7 +79,7 @@ func SetUpUserRouters(app *fiber.App, userHandler *handlers.UserHandler) {
 		})
 	})
 
-	users.Put("/:id", func(c *fiber.Ctx) error {
+	users.Put("/:id<int>", func(c *fiber.Ctx) error {
 		var input dto.UpdateUserDto
 
 		idUser := c.Params("id")
@@ -113,4 +113,19 @@ func SetUpUserRouters(app *fiber.App, userHandler *handlers.UserHandler) {
 			"detail": "Usuario actualizado Correctamente",
 		})
 	})
+
+  users.Delete("/:id<int>", func(c *fiber.Ctx) error {
+    id,_ := strconv.Atoi(c.Params("id"))
+    resutl,error := userHandler.DeleteUser(id)
+    if error != nil {
+      return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+        "error":"Error al eliminar al usuario",
+        "detail":error.Error(),
+      })
+    }
+    return c.JSON(fiber.Map{
+      "data":resutl,
+      "detail":"Usuario eliminado con exito",
+    })
+  })
 }
