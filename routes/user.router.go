@@ -2,19 +2,19 @@ package routes
 
 import (
 	"incidence_grade/dto/users"
-	"incidence_grade/handlers"
+	"incidence_grade/use_case"
 	"incidence_grade/utils"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetUpUserRouters(app *fiber.App, userHandler *handlers.UserHandler) {
+func SetUpUserRouters(app *fiber.App, user *use_case.User) {
 	users := app.Group("/users")
 
 	// Get Users
 	users.Get("/", func(c *fiber.Ctx) error {
-		allUsers, error := userHandler.GetAllUsers()
+		allUsers, error := user.GetAll()
 		if error != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error":  "Error al obtener los usuarios",
@@ -32,7 +32,7 @@ func SetUpUserRouters(app *fiber.App, userHandler *handlers.UserHandler) {
 	users.Get("/:id<int>", func(c *fiber.Ctx) error {
 		idUser := c.Params("id")
 		idUserInt, _ := strconv.Atoi(idUser)
-		userFind, error := userHandler.GetUserById(uint(idUserInt))
+		userFind, error := user.GetById(uint(idUserInt))
 		if error != nil {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error":  "Error al obtener usuario",
@@ -65,7 +65,7 @@ func SetUpUserRouters(app *fiber.App, userHandler *handlers.UserHandler) {
 			})
 		}
 
-		createdUser, error := userHandler.CreateUser(input)
+		createdUser, error := user.Create(input)
 		if error != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error":  "Error al crear el usuario",
@@ -101,7 +101,7 @@ func SetUpUserRouters(app *fiber.App, userHandler *handlers.UserHandler) {
 			})
 		}
 
-		userUpdated, error := userHandler.UpdateUser(uint(idUserInt), input)
+		userUpdated, error := user.Update(uint(idUserInt), input)
 		if error != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error":  "Error al actualizar el usuario",
@@ -116,7 +116,7 @@ func SetUpUserRouters(app *fiber.App, userHandler *handlers.UserHandler) {
 
   users.Delete("/:id<int>", func(c *fiber.Ctx) error {
     id,_ := strconv.Atoi(c.Params("id"))
-    resutl,error := userHandler.DeleteUser(id)
+    resutl,error := user.Delete(id)
     if error != nil {
       return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
         "error":"Error al eliminar al usuario",

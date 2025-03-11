@@ -1,11 +1,11 @@
 package routes
 
 import (
-	"incidence_grade/handlers"
+	"incidence_grade/use_case"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetUpIncidentRouters(app *fiber.App, incidentHandler *handlers.IncidentHandler){
-  incidents := app.Group("/incidents")
+func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident){
+  app.Group("/incidents")
 }

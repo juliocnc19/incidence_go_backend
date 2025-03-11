@@ -2,16 +2,13 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type UserToken struct {
-	gorm.Model
-	ID          uint      `gorm:"primaryKey;autoIncrement"`
-	UserID      uint      `gorm:"not null"`
-	User        User      `gorm:"foreignKey:UserID"`
-	DeviceToken string    `gorm:"type:varchar(255);unique;not null"`
-	Platform    string    `gorm:"type:varchar(50);not null"`
-	CreatedAt   time.Time `gorm:"autoCreateTime"`
+	ID          uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	UserID      uint      `gorm:"not null" json:"user_id"`
+	User        User      `gorm:"foreignKey:UserID" json:"user"`
+	DeviceToken string    `gorm:"type:varchar(255);unique;not null" json:"device_token"`
+	Platform    string    `gorm:"type:varchar(50);not null" json:"plataform"`
+	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
 }

@@ -2,7 +2,7 @@ package main
 
 import (
 	"incidence_grade/config"
-	"incidence_grade/handlers"
+	"incidence_grade/use_case"
 	"incidence_grade/repository"
 	"incidence_grade/routes"
 
@@ -13,7 +13,7 @@ import (
 func main() {
 	app := fiber.New()
   app.Use(logger.New(logger.Config{
-    Format: "[${ip}] ${status} - ${method} ${path} - ${latency}\n",
+    Format: "[${ip}] ${status} ${method} ${path} ${latency}\n",
   }))
   
   //db
@@ -25,11 +25,11 @@ func main() {
   incidentRepo := repository.NewIncidentRepository(db)
   
   //Handler
-	userHandler := handlers.NewUserHandler(userRepo)
-  handlers.NewIncidentHandler(incidentRepo)
+	user := use_case.NewUser(userRepo)
+  use_case.NewIncident(incidentRepo)
   
   //Routers
-	routes.SetUpUserRouters(app, userHandler)
+	routes.SetUpUserRouters(app, user)
 
 	app.Listen(":3001")
 }

@@ -2,14 +2,11 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Status struct {
-	gorm.Model
-	ID        uint      `gorm:"primaryKey;autoIncrement"`
-	Name      string    `gorm:"type:varchar(255);not null"`
-	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name      string    `gorm:"type:varchar(255);not null" json:"name"`
+	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }

@@ -2,17 +2,14 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Notification struct {
-	gorm.Model
-	ID        uint      `gorm:"primaryKey;autoIncrement"`
-	Title     string    `gorm:"type:varchar(255);not null"`
-	Message   string    `gorm:"type:text;not null"`
-	UserID    uint      `gorm:"not null"`
-	User      User      `gorm:"foreignKey:UserID"`
-	IsRead    bool      `gorm:"default:false"`
-	CreatedAt time.Time `gorm:"autoCreateTime"`
+	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	Title     string    `gorm:"type:varchar(255);not null" json:"title"`
+	Message   string    `gorm:"type:text;not null" json:"message"`
+	UserID    uint      `gorm:"not null" json:"user_id"`
+	User      User      `gorm:"foreignKey:UserID" json:"user"`
+	IsRead    bool      `gorm:"default:false" json:"is_read"`
+	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 }

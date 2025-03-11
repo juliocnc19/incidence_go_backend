@@ -1,4 +1,4 @@
-package handlers
+package use_case
 
 import (
 	"incidence_grade/dto/users"
@@ -6,15 +6,15 @@ import (
 	"incidence_grade/repository"
 )
 
-type UserHandler struct {
+type User struct {
 	repo *repository.UserRespository
 }
 
-func NewUserHandler(repo *repository.UserRespository) *UserHandler {
-	return &UserHandler{repo: repo}
+func NewUser(repo *repository.UserRespository) *User {
+	return &User{repo: repo}
 }
 
-func (s *UserHandler) CreateUser(input dto.CreateUserDto) (*models.User, error) {
+func (s *User) Create(input dto.CreateUserDto) (*models.User, error) {
 	user := &models.User{
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
@@ -27,15 +27,15 @@ func (s *UserHandler) CreateUser(input dto.CreateUserDto) (*models.User, error) 
 	return s.repo.Create(user)
 }
 
-func (s *UserHandler) GetAllUsers() ([]models.User, error) {
+func (s *User) GetAll() ([]models.User, error) {
 	return s.repo.FindAll()
 }
 
-func (s *UserHandler) GetUserById(id uint) (*models.User, error) {
+func (s *User) GetById(id uint) (*models.User, error) {
 	return s.repo.FindById(id)
 }
 
-func (s *UserHandler) UpdateUser(id uint, input dto.UpdateUserDto) (*models.User, error) {
+func (s *User) Update(id uint, input dto.UpdateUserDto) (*models.User, error) {
 	user := &models.User{
 		ID:        id,
 		FirstName: input.FirstName,
@@ -49,6 +49,6 @@ func (s *UserHandler) UpdateUser(id uint, input dto.UpdateUserDto) (*models.User
 	return s.repo.Update(user)
 }
 
-func (s *UserHandler) DeleteUser(id int) (map[string]interface{}, error){
+func (s *User) Delete(id int) (map[string]interface{}, error){
   return s.repo.Detele(id)
 }
