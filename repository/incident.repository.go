@@ -24,7 +24,7 @@ func (r *IncidentRepository) Create(incident *models.Incident) (*models.Incident
 
 func (r *IncidentRepository) FindById(id uint) (*models.Incident, error) {
 	var incident models.Incident
-	error := r.db.Preload("Status").Preload("User").First(id, &incident).Error
+	error := r.db.Preload("Status").Preload("User").First(&incident,id).Error
 	if error != nil {
 		return nil, error
 	}
@@ -56,7 +56,7 @@ func (r *IncidentRepository) Delete(id uint) (map[string]interface{}, error) {
 	}
 	resutl := map[string]interface{}{
 		"ok":      true,
-		"message": "Usuario Eliminado con exito",
+		"message": "Incidencia Eliminado con exito",
 		"id":      id,
 	}
 	return resutl, nil
