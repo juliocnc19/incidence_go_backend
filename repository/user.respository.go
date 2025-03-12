@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"errors"
 	"incidence_grade/models"
+	"incidence_grade/utils"
 
 	"gorm.io/gorm"
 )
@@ -55,8 +57,24 @@ func (r *UserRespository) Detele(id int) (map[string]interface{}, error) {
   }
   resutl := map[string]interface{}{
     "ok":true,
-    "message":"Usuario Eliminado con exito",
     "id":id,
   }
   return resutl,nil
 }
+
+func (r *UserRespository) Login(email string, password string) (*models.User, error){
+  var user models.User
+  error := r.db.Where("email = ?", email).First(&user).Error
+  if error != nil{
+    return nil, errors.New("Usuario no encontrado")
+  }
+
+  result := utils.CheckPasswordHash(password,user.Password)
+  if !result {
+    return nil, errors.New("Contraseña invalida")
+  }
+
+  return &user,nil
+
+}
+

@@ -31,6 +31,7 @@ func main() {
 	//Routers
 	routes.SetUpUserRouters(app, user)
 	routes.SetUpIncidentRouters(app, incident)
+  routes.SetUpAuthRouters(app,user)
 
 	app.Listen(":3001")
 }

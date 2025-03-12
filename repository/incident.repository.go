@@ -56,7 +56,6 @@ func (r *IncidentRepository) Delete(id uint) (map[string]interface{}, error) {
 	}
 	resutl := map[string]interface{}{
 		"ok":      true,
-		"message": "Incidencia Eliminado con exito",
 		"id":      id,
 	}
 	return resutl, nil

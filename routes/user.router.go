@@ -2,6 +2,7 @@ package routes
 
 import (
 	"incidence_grade/dto/users"
+	"incidence_grade/middleware"
 	"incidence_grade/use_case"
 	"incidence_grade/utils"
 	"strconv"
@@ -13,7 +14,7 @@ func SetUpUserRouters(app *fiber.App, user *use_case.User) {
 	users := app.Group("/users")
 
 	// Get Users
-	users.Get("/", func(c *fiber.Ctx) error {
+	users.Get("/", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		allUsers, error := user.GetAll()
 		if error != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -29,7 +30,7 @@ func SetUpUserRouters(app *fiber.App, user *use_case.User) {
 	})
 
 	//Get User for id:int
-	users.Get("/:id<int>", func(c *fiber.Ctx) error {
+	users.Get("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		idUser := c.Params("id")
 		idUserInt, _ := strconv.Atoi(idUser)
 		userFind, error := user.GetById(uint(idUserInt))
@@ -46,7 +47,7 @@ func SetUpUserRouters(app *fiber.App, user *use_case.User) {
 	})
 
 	//Post User Create
-	users.Post("/", func(c *fiber.Ctx) error {
+	users.Post("/", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		var input dto.CreateUserDto
 
 		errorParser := c.BodyParser(&input)
@@ -79,7 +80,7 @@ func SetUpUserRouters(app *fiber.App, user *use_case.User) {
 		})
 	})
 
-	users.Put("/:id<int>", func(c *fiber.Ctx) error {
+	users.Put("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		var input dto.UpdateUserDto
 
 		idUser := c.Params("id")
@@ -114,18 +115,18 @@ func SetUpUserRouters(app *fiber.App, user *use_case.User) {
 		})
 	})
 
-  users.Delete("/:id<int>", func(c *fiber.Ctx) error {
-    id,_ := strconv.Atoi(c.Params("id"))
-    resutl,error := user.Delete(id)
-    if error != nil {
-      return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-        "error":"Error al eliminar al usuario",
-        "detail":error.Error(),
-      })
-    }
-    return c.JSON(fiber.Map{
-      "data":resutl,
-      "detail":"Usuario eliminado con exito",
-    })
-  })
+	users.Delete("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
+		id, _ := strconv.Atoi(c.Params("id"))
+		resutl, error := user.Delete(id)
+		if error != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  "Error al eliminar al usuario",
+				"detail": error.Error(),
+			})
+		}
+		return c.JSON(fiber.Map{
+			"data":   resutl,
+			"detail": "Usuario eliminado con exito",
+		})
+	})
 }

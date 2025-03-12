@@ -1,9 +1,11 @@
 package use_case
 
 import (
-	"incidence_grade/dto/users"
+	authDto "incidence_grade/dto/auth"
+	dto "incidence_grade/dto/users"
 	"incidence_grade/models"
 	"incidence_grade/repository"
+	"incidence_grade/utils"
 )
 
 type User struct {
@@ -15,10 +17,14 @@ func NewUser(repo *repository.UserRespository) *User {
 }
 
 func (s *User) Create(input dto.CreateUserDto) (*models.User, error) {
+	hashedPassword, error := utils.HashPassword(input.Password)
+	if error != nil {
+		panic("Error al hashear las contraseña")
+	}
 	user := &models.User{
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
-		Password:  input.Password,
+		Password:  hashedPassword,
 		Email:     input.Email,
 		Username:  input.Username,
 		AvatarURL: input.AvatarURL,
@@ -49,6 +55,27 @@ func (s *User) Update(id uint, input dto.UpdateUserDto) (*models.User, error) {
 	return s.repo.Update(user)
 }
 
-func (s *User) Delete(id int) (map[string]interface{}, error){
-  return s.repo.Detele(id)
+func (s *User) Delete(id int) (map[string]interface{}, error) {
+	return s.repo.Detele(id)
+}
+
+func (s *User) Login(input authDto.LoginUserDto) (*models.User, error) {
+	return s.repo.Login(input.Email, input.Password)
+}
+
+func (s *User) Register(input authDto.RegisterUserDto) (*models.User, error) {
+	hashedPassword, error := utils.HashPassword(input.Password)
+	if error != nil {
+		panic("Error al hashear las contraseña")
+	}
+	user := &models.User{
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Email:     input.Email,
+		Password:  hashedPassword,
+		Username:  input.Username,
+		AvatarURL: "",
+		RoleID:    2,
+	}
+  return s.repo.Create(user)
 }
