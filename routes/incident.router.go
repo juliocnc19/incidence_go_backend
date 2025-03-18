@@ -11,9 +11,9 @@ import (
 )
 
 func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
-	incidents := app.Group("/incidents")
+	incidents := app.Group("/incidents", middleware.JWTMiddleware)
 
-	incidents.Get("/", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
+	incidents.Get("/", func(c *fiber.Ctx) error {
 
 		allIncidents, error := incident.GetAll()
 		if error != nil {
@@ -29,7 +29,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 		})
 	})
 
-	incidents.Get("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
+	incidents.Get("/:id<int>", func(c *fiber.Ctx) error {
 		idIncident := c.Params("id")
 		idIncidentInt, _ := strconv.Atoi(idIncident)
 		incidentFind, error := incident.GetById(uint(idIncidentInt))
@@ -46,7 +46,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 		})
 	})
 
-	incidents.Post("/", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
+	incidents.Post("/", func(c *fiber.Ctx) error {
 		var input dto.CreateIncidentDto
 		errorParser := c.BodyParser(&input)
 		if errorParser != nil {
@@ -78,7 +78,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 
 	})
 
-	incidents.Put("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
+	incidents.Put("/:id<int>", func(c *fiber.Ctx) error {
 		var input dto.UpdateIncidentDto
 		idIncident := c.Params("id")
 		idIncidentInt, _ := strconv.Atoi(idIncident)
@@ -112,7 +112,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 		})
 	})
 
-	incidents.Delete("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
+	incidents.Delete("/:id<int>", func(c *fiber.Ctx) error {
 		id, _ := strconv.Atoi(c.Params("id"))
 		resutl, error := incident.Delete(uint(id))
 		if error != nil {

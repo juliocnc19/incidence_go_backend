@@ -28,6 +28,7 @@ func migrate(db *gorm.DB) {
 		&models.Role{},
 		&models.Status{},
 		&models.UserToken{},
+		&models.Attachment{},
 	)
 }
 
