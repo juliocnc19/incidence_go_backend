@@ -21,7 +21,6 @@ func (s *Incident) Create(input dto.CreateIncidentDto) (*models.Incident,error){
     StatusID: input.StatusID,
     Response: input.Response,
     UserID: input.UserID,
-    AttachmentPath: input.AttachmentPath,
   }
   return s.repo.Create(incident)
 }
@@ -42,11 +41,14 @@ func (s *Incident) Update(id uint, input dto.UpdateIncidentDto) (*models.Inciden
     StatusID: input.StatusID,
     Response: input.Response,
     UserID: input.UserID,
-    AttachmentPath: input.AttachmentPath,
   }
   return s.repo.Update(incidentUpdate)
 }
 
 func (s *Incident) Delete(id uint) (map[string]interface{},error){
   return s.repo.Delete(id)
+}
+
+func (s *Incident) FindByIdUser(user_id uint) ([]models.Incident,error){
+  return s.repo.FindByIdUser(user_id)
 }

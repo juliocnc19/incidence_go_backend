@@ -126,4 +126,22 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 			"detail": "Incidencia eliminada con exito",
 		})
 	})
+
+	incidents.Get("/user/:user_id<int>", func(c *fiber.Ctx) error {
+		idUser := c.Params("user_id")
+		idIncidentInt, _ := strconv.Atoi(idUser)
+		usersIncidents, error := incident.FindByIdUser(uint(idIncidentInt))
+		if error != nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error":  "Error al obtener las incidencia",
+				"detail": error.Error(),
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"data":   usersIncidents,
+			"detail": "Incidencias de usario obtenidas",
+      "length": len(usersIncidents),
+		})
+	})
 }

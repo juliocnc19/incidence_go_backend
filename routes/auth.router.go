@@ -50,7 +50,7 @@ func SetUpAuthRouters(app *fiber.App, user *use_case.User) {
 
 		if error != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  "Error en autenticacion",
+				"error":  "Credenciales invalidas",
 				"detail": error.Error(),
 			})
 		}
