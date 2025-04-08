@@ -57,7 +57,6 @@ func seed(db *gorm.DB) {
 		{Name: "in_progress"},
 		{Name: "on_hold"},
 		{Name: "resolved"},
-		{Name: "refused"},
 	}
 
 	for _, status := range statuses {

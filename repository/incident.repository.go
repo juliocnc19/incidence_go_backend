@@ -63,7 +63,7 @@ func (r *IncidentRepository) Delete(id uint) (map[string]interface{}, error) {
 
 func (r *IncidentRepository) FindByIdUser(user_id uint) ([]models.Incident, error){
 	var incident []models.Incident
-	error := r.db.Where("user_id = ?",user_id).Preload("Status").Preload("User").Find(&incident).Error
+	error := r.db.Where("user_id = ?",user_id).Preload("Status").Preload("User").Preload("Attachment").Find(&incident).Error
 	if error != nil {
 		return nil, error
 	}
