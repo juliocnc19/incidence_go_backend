@@ -6,6 +6,6 @@ type CreateUserDto struct {
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required,min=8"`
 	Username  string `json:"username" validate:"required"`
-	AvatarURL string `json:"avatar_url"`
 	RoleID    uint   `json:"role_id" validate:"required"`
+	Cedula    string `json:"cedula" validate:"required"`
 }

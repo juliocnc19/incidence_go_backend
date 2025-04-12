@@ -27,8 +27,8 @@ func (s *User) Create(input dto.CreateUserDto) (*models.User, error) {
 		Password:  hashedPassword,
 		Email:     input.Email,
 		Username:  input.Username,
-		AvatarURL: input.AvatarURL,
 		RoleID:    input.RoleID,
+		Cedula:    input.Cedula,
 	}
 	return s.repo.Create(user)
 }
@@ -49,7 +49,6 @@ func (s *User) Update(id uint, input dto.UpdateUserDto) (*models.User, error) {
 		Email:     input.Email,
 		Password:  input.Password,
 		Username:  input.Username,
-		AvatarURL: input.AvatarURL,
 		RoleID:    input.RoleID,
 	}
 	return s.repo.Update(user)
@@ -74,8 +73,7 @@ func (s *User) Register(input authDto.RegisterUserDto) (*models.User, error) {
 		Email:     input.Email,
 		Password:  hashedPassword,
 		Username:  input.Username,
-		AvatarURL: "",
 		RoleID:    2,
 	}
-  return s.repo.Create(user)
+	return s.repo.Create(user)
 }

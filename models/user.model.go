@@ -11,7 +11,7 @@ type User struct {
 	Email     string    `gorm:"type:varchar(255);unique;not null" json:"email"`
 	Username  string    `gorm:"type:varchar(255);unique;not null" json:"username"`
 	Password  string    `gorm:"type:varchar(255);not null" json:"password"`
-	AvatarURL string    `gorm:"type:varchar(255)" json:"avatar_url"`
+	Cedula    string    `gorm:"type:varchar(255);unique;not null" json:"cedula"`
 	RoleID    uint      `gorm:"not null" json:"role_id"`
 	Role      Role      `gorm:"foreignKey:RoleID" json:"role"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
