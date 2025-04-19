@@ -24,7 +24,7 @@ func (r *IncidentRepository) Create(incident *models.Incident) (*models.Incident
 
 func (r *IncidentRepository) FindById(id uint) (*models.Incident, error) {
 	var incident models.Incident
-	error := r.db.Preload("Status").Preload("User").First(&incident,id).Error
+	error := r.db.Preload("Status").Preload("User").First(&incident, id).Error
 	if error != nil {
 		return nil, error
 	}
@@ -55,17 +55,32 @@ func (r *IncidentRepository) Delete(id uint) (map[string]interface{}, error) {
 		return nil, error
 	}
 	resutl := map[string]interface{}{
-		"ok":      true,
-		"id":      id,
+		"ok": true,
+		"id": id,
 	}
 	return resutl, nil
 }
 
-func (r *IncidentRepository) FindByIdUser(user_id uint) ([]models.Incident, error){
+func (r *IncidentRepository) FindByIdUser(user_id uint) ([]models.Incident, error) {
 	var incident []models.Incident
-	error := r.db.Where("user_id = ?",user_id).Preload("Status").Preload("User").Preload("Attachment").Find(&incident).Error
+	error := r.db.Where("user_id = ?", user_id).Preload("Status").Preload("User").Preload("Attachment").Find(&incident).Error
 	if error != nil {
 		return nil, error
 	}
 	return incident, nil
+}
+
+func (r *IncidentRepository) SaveFile(files []models.Attachment) (map[string]interface{}, error) {
+	for file := range files {
+		error := r.db.Create(file).Error
+		if error != nil {
+			return nil, error
+		}
+	}
+	resutl := map[string]interface{}{
+		"ok":     files,
+		"detail": "Registro de archivos exitoso",
+	}
+	return resutl, nil
+
 }

@@ -5,12 +5,16 @@ import (
 	"incidence_grade/repository"
 	"incidence_grade/routes"
 	"incidence_grade/use_case"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
+	if err := config.CreateDirectory(); err != nil {
+		log.Fatalf("Error inicializando directorio de uploads: %v", err)
+	}
 	app := fiber.New()
 	app.Use(logger.New(logger.Config{
 		Format: "[${ip}] ${status} ${method} ${path} ${latency}\n",
@@ -31,7 +35,7 @@ func main() {
 	//Routers
 	routes.SetUpUserRouters(app, user)
 	routes.SetUpIncidentRouters(app, incident)
-  routes.SetUpAuthRouters(app,user)
+	routes.SetUpAuthRouters(app, user)
 
 	app.Listen("0.0.0.0:3001")
 }

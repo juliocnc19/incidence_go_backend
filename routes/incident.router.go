@@ -1,13 +1,19 @@
 package routes
 
 import (
+	"fmt"
 	dto "incidence_grade/dto/incidents"
 	"incidence_grade/middleware"
 	"incidence_grade/use_case"
 	"incidence_grade/utils"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+)
+
+const (
+	UploadDirectory = "./uploads"
 )
 
 func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
@@ -141,7 +147,59 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 		return c.JSON(fiber.Map{
 			"data":   usersIncidents,
 			"detail": "Incidencias de usario obtenidas",
-      "length": len(usersIncidents),
+			"length": len(usersIncidents),
+		})
+	})
+	incidents.Post("/upload", func(c *fiber.Ctx) error {
+		incidentID := c.FormValue("incident_id")
+		if incidentID == "" {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  "Se requiere el incident_id",
+				"detail": "Error al obtener el id de incidencia",
+			})
+		}
+
+		idIncidentInt, _ := strconv.Atoi(incidentID)
+
+		form, err := c.MultipartForm()
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  "Error al procesar el formulario",
+				"detail": err.Error(),
+			})
+		}
+
+		files := form.File["files"]
+		if len(files) == 0 {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  "No se encontraron archivos",
+				"detail": "",
+			})
+		}
+
+		var uploadedFiles []string
+		for _, file := range files {
+			filename := filepath.Join(UploadDirectory, file.Filename)
+			if err := c.SaveFile(file, filename); err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"error":  fmt.Sprintf("Error al guardar el archivo %s", file.Filename),
+					"detail": err.Error(),
+				})
+			}
+			uploadedFiles = append(uploadedFiles, filename)
+		}
+
+		fileCreated, error := incident.SaveFiles(uploadedFiles, uint(idIncidentInt))
+		if error != nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error":  "Error registrar el archivo",
+				"detail": error.Error(),
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"data":   fileCreated,
+			"detail": fmt.Sprintf("%d archivos subidos correctamente", len(files)),
 		})
 	})
 }
