@@ -6,6 +6,7 @@ import (
 	"incidence_grade/middleware"
 	"incidence_grade/use_case"
 	"incidence_grade/utils"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -201,5 +202,17 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 			"data":   fileCreated,
 			"detail": fmt.Sprintf("%d archivos subidos correctamente", len(files)),
 		})
+	})
+
+	incidents.Get("/download/:filename", func(c *fiber.Ctx) error {
+		filename := c.Params("filename")
+		filePath := filepath.Join(UploadDirectory, filename)
+		if _, err := os.Stat(filePath); os.IsNotExist(err) {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error":  "Archivo no encontrado",
+				"detail": err.Error(),
+			})
+		}
+		return c.Download(filePath)
 	})
 }

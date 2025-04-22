@@ -27,15 +27,24 @@ func main() {
 	//Repository
 	userRepo := repository.NewUserRepository(db)
 	incidentRepo := repository.NewIncidentRepository(db)
+	roleRepo := repository.NewRoleRepository(db)
+	statusRepo := repository.NewStatusRepository(db)
+	attachmentRepo := repository.NewAttachmentRepository(db)
 
 	//Handler
 	user := use_case.NewUser(userRepo)
 	incident := use_case.NewIncident(incidentRepo)
+	role := use_case.NewRole(roleRepo)
+	status := use_case.NewStatus(statusRepo)
+	attachment := use_case.NewAttachment(attachmentRepo)
 
 	//Routers
 	routes.SetUpUserRouters(app, user)
 	routes.SetUpIncidentRouters(app, incident)
 	routes.SetUpAuthRouters(app, user)
+	routes.SetUpRoleRouters(app, role)
+	routes.SetUpStatusRouters(app, status)
+	routes.SetUpAttachmentRouters(app, attachment)
 
 	app.Listen("0.0.0.0:3001")
 }
