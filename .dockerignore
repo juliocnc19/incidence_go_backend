@@ -1,0 +1,10 @@
+.git
+.gitignore
+.env
+.air.toml
+README.md
+docker-compose.yml
+Dockerfile
+.dockerignore
+uploads/*
+!uploads/.gitkeep 
