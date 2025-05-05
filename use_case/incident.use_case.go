@@ -53,7 +53,7 @@ func (s *Incident) FindByIdUser(user_id uint) ([]models.Incident, error) {
 	return s.repo.FindByIdUser(user_id)
 }
 
-func (s *Incident) SaveFiles(filenames []string, incident_id uint) (map[string]interface{}, error) {
+func (s *Incident) SaveFiles(filenames []string, incident_id uint) ([]models.Attachment, error) {
 	var uploadedAttachments []models.Attachment
 	for file := range filenames {
 		attachment := models.Attachment{

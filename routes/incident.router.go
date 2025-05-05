@@ -18,9 +18,9 @@ const (
 )
 
 func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
-	incidents := app.Group("/incidents", middleware.JWTMiddleware)
+	incidents := app.Group("/incidents")
 
-	incidents.Get("/", func(c *fiber.Ctx) error {
+	incidents.Get("/", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 
 		allIncidents, error := incident.GetAll()
 		if error != nil {
@@ -36,7 +36,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 		})
 	})
 
-	incidents.Get("/:id<int>", func(c *fiber.Ctx) error {
+	incidents.Get("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		idIncident := c.Params("id")
 		idIncidentInt, _ := strconv.Atoi(idIncident)
 		incidentFind, error := incident.GetById(uint(idIncidentInt))
@@ -53,7 +53,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 		})
 	})
 
-	incidents.Post("/", func(c *fiber.Ctx) error {
+	incidents.Post("/", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		var input dto.CreateIncidentDto
 		errorParser := c.BodyParser(&input)
 		if errorParser != nil {
@@ -85,7 +85,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 
 	})
 
-	incidents.Put("/:id<int>", func(c *fiber.Ctx) error {
+	incidents.Put("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		var input dto.UpdateIncidentDto
 		idIncident := c.Params("id")
 		idIncidentInt, _ := strconv.Atoi(idIncident)
@@ -119,7 +119,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 		})
 	})
 
-	incidents.Delete("/:id<int>", func(c *fiber.Ctx) error {
+	incidents.Delete("/:id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		id, _ := strconv.Atoi(c.Params("id"))
 		resutl, error := incident.Delete(uint(id))
 		if error != nil {
@@ -134,7 +134,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 		})
 	})
 
-	incidents.Get("/user/:user_id<int>", func(c *fiber.Ctx) error {
+	incidents.Get("/user/:user_id<int>", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		idUser := c.Params("user_id")
 		idIncidentInt, _ := strconv.Atoi(idUser)
 		usersIncidents, error := incident.FindByIdUser(uint(idIncidentInt))
@@ -151,7 +151,7 @@ func SetUpIncidentRouters(app *fiber.App, incident *use_case.Incident) {
 			"length": len(usersIncidents),
 		})
 	})
-	incidents.Post("/upload", func(c *fiber.Ctx) error {
+	incidents.Post("/upload", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
 		incidentID := c.FormValue("incident_id")
 		if incidentID == "" {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
