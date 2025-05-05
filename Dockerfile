@@ -1,24 +1,30 @@
-FROM golang:1.23.4-alpine
+FROM golang:1.23.4-alpine AS builder
+
+RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apk add --no-cache gcc musl-dev
-
-# Copy go mod and sum files
 COPY go.mod go.sum ./
-
-# Download all dependencies
 RUN go mod download
 
-# Copy the source code
 COPY . .
 
-# Build the application
-RUN go build -o main .
+RUN CGO_ENABLED=0 go build -ldflags='-w -s' -o main .
 
-# Expose port 3001
+FROM alpine:latest
+
+WORKDIR /app
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+COPY --from=builder /app/main .
+
+RUN mkdir uploads && chown appuser:appgroup uploads
+
+RUN chown -R appuser:appgroup /app
+
+USER appuser
+
 EXPOSE 3001
 
-# Command to run the executable
-CMD ["./main"] 
+CMD ["./main"]
