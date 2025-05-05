@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"incidence_grade/models"
 	"gorm.io/gorm"
+	"incidence_grade/models"
 )
 
 type AttachmentRepository struct {
@@ -61,9 +61,10 @@ func (r *AttachmentRepository) Delete(id uint) (map[string]interface{}, error) {
 
 func (r *AttachmentRepository) FindByIncidentId(incidentId uint) ([]models.Attachment, error) {
 	var attachments []models.Attachment
-	err := r.db.Preload("Incident").Where("incident_id = ?", incidentId).Find(&attachments).Error
+	err := r.db.Where("incident_id = ?", incidentId).Find(&attachments).Error
 	if err != nil {
 		return nil, err
 	}
 	return attachments, nil
-} 
+}
+
