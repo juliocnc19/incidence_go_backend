@@ -10,7 +10,7 @@ type User struct {
 	LastName  string    `gorm:"type:varchar(255);not null" json:"last_name"`
 	Email     string    `gorm:"type:varchar(255);unique;not null" json:"email"`
 	Username  string    `gorm:"type:varchar(255);unique;not null" json:"username"`
-	Password  string    `gorm:"type:varchar(255);not null" json:"password"`
+	Password  string    `gorm:"type:varchar(255);not null" json:"-"`
 	Cedula    string    `gorm:"type:varchar(255);unique;not null" json:"cedula"`
 	RoleID    uint      `gorm:"not null" json:"role_id"`
 	Role      Role      `gorm:"foreignKey:RoleID" json:"role"`
