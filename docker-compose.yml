@@ -3,13 +3,8 @@ services:
     build: .
     ports:
       - "3004:3001"
-    environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=incident_admin
-      - DB_PASSWORD=incident_password
-      - DB_NAME=incident_grade
-      - JWT_SECRET=incidencegrade
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
@@ -23,16 +18,14 @@ services:
     image: postgres:15
     ports:
       - "5437:5432"
-    environment:
-      - POSTGRES_USER=incident_admin
-      - POSTGRES_PASSWORD=incident_password
-      - POSTGRES_DB=incident_grade
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U incident_admin -d incident_grade"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
