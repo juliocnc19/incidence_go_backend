@@ -42,12 +42,17 @@ func (s *User) GetById(id uint) (*models.User, error) {
 }
 
 func (s *User) Update(id uint, input dto.UpdateUserDto) (*models.User, error) {
+	hashedPassword, error := utils.HashPassword(input.Password)
+	if error != nil {
+		panic("Error al hashear las contraseña")
+	}
+
 	user := &models.User{
 		ID:        id,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 		Email:     input.Email,
-		Password:  input.Password,
+		Password:  hashedPassword,
 		Username:  input.Username,
 		RoleID:    input.RoleID,
 	}
