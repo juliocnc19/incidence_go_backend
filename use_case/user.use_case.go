@@ -55,6 +55,7 @@ func (s *User) Update(id uint, input dto.UpdateUserDto) (*models.User, error) {
 		Password:  hashedPassword,
 		Username:  input.Username,
 		RoleID:    input.RoleID,
+		Cedula:    input.Cedula,
 	}
 	return s.repo.Update(user)
 }
@@ -79,6 +80,7 @@ func (s *User) Register(input authDto.RegisterUserDto) (*models.User, error) {
 		Password:  hashedPassword,
 		Username:  input.Username,
 		RoleID:    2,
+		Cedula:    input.Cedula,
 	}
 	return s.repo.Create(user)
 }
