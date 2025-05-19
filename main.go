@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
@@ -19,6 +20,9 @@ func main() {
 	app.Use(logger.New(logger.Config{
 		Format: "[${ip}] ${status} ${method} ${path} ${latency}\n",
 	}))
+  app.Use(cors.New(cors.Config{
+    AllowOrigins:"*",
+  }))
 
 	//db
 	environments := config.LoadEnviroments()

@@ -56,7 +56,7 @@ func seed(db *gorm.DB) {
 	statuses := []models.Status{
 		{Name: "in_progress"},
 		{Name: "on_hold"},
-		{Name: "resolved"},
+		{Name: "rejected"},
 		{Name: "draf"},
 	}
 
