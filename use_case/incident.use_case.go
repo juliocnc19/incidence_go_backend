@@ -42,11 +42,8 @@ func (s *Incident) GetById(id uint) (*models.Incident, error) {
 func (s *Incident) Update(id uint, input dto.UpdateIncidentDto) (*models.Incident, error) {
 	incidentUpdate := &models.Incident{
 		ID:          id,
-		Title:       input.Title,
-		Description: input.Description,
 		StatusID:    input.StatusID,
 		Response:    input.Response,
-		UserID:      input.UserID,
 	}
 	return s.repo.Update(incidentUpdate)
 }
@@ -90,11 +87,8 @@ func (s *Incident) SaveFiles(filenames []string, incident_id uint) ([]models.Att
 	if incident.StatusID == StatusDraft {
 		log.Printf("Updating incident %d status from draft to in_progress", incident_id)
 		updateDto := dto.UpdateIncidentDto{
-			Title:       incident.Title,
-			Description: incident.Description,
 			StatusID:    StatusInProgress,
 			Response:    incident.Response,
-			UserID:      incident.UserID,
 		}
 		_, err = s.Update(incident_id, updateDto)
 		if err != nil {
