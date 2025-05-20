@@ -41,9 +41,11 @@ func (r *IncidentRepository) FindAll() ([]models.Incident, error) {
 }
 
 func (r *IncidentRepository) Update(incident *models.Incident) (*models.Incident, error) {
-	error := r.db.Save(incident).Error
-	if error != nil {
-		return nil, error
+	if err := r.db.
+		Model(&models.Incident{ID: incident.ID}).
+		Updates(incident).
+		Error; err != nil {
+		return nil, err
 	}
 	return incident, nil
 }

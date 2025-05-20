@@ -17,11 +17,11 @@ func NewUserRepository(db *gorm.DB) *UserRespository {
 }
 
 func (r *UserRespository) Create(user *models.User) (*models.User, error) {
-  error := r.db.Create(user).Error
-  if error != nil{
-    return nil,error
-  }
-  return user,nil
+	error := r.db.Create(user).Error
+	if error != nil {
+		return nil, error
+	}
+	return user, nil
 }
 
 func (r *UserRespository) FindById(id uint) (*models.User, error) {
@@ -36,45 +36,46 @@ func (r *UserRespository) FindById(id uint) (*models.User, error) {
 func (r *UserRespository) FindAll() ([]models.User, error) {
 	var users []models.User
 	error := r.db.Preload("Role").Find(&users).Error
-  if error != nil{
-    return nil, error
-  }
+	if error != nil {
+		return nil, error
+	}
 	return users, nil
 }
 
 func (r *UserRespository) Update(user *models.User) (*models.User, error) {
-  error := r.db.Save(user).Error
-  if error != nil{
-    return nil,error
-  }
-  return user,nil
+	if err := r.db.
+		Model(&models.User{ID: user.ID}).
+		Updates(user).
+		Error; err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (r *UserRespository) Detele(id int) (map[string]interface{}, error) {
-  error := r.db.Delete(&models.User{}, id).Error
-  if error != nil{
-    return nil, error
-  }
-  resutl := map[string]interface{}{
-    "ok":true,
-    "id":id,
-  }
-  return resutl,nil
+	error := r.db.Delete(&models.User{}, id).Error
+	if error != nil {
+		return nil, error
+	}
+	resutl := map[string]interface{}{
+		"ok": true,
+		"id": id,
+	}
+	return resutl, nil
 }
 
-func (r *UserRespository) Login(email string, password string) (*models.User, error){
-  var user models.User
-  error := r.db.Where("email = ?", email).First(&user).Error
-  if error != nil{
-    return nil, errors.New("Usuario no encontrado")
-  }
+func (r *UserRespository) Login(email string, password string) (*models.User, error) {
+	var user models.User
+	error := r.db.Where("email = ?", email).Preload("Role").First(&user).Error
+	if error != nil {
+		return nil, errors.New("Usuario no encontrado")
+	}
 
-  result := utils.CheckPasswordHash(password,user.Password)
-  if !result {
-    return nil, errors.New("Contraseña invalida")
-  }
+	result := utils.CheckPasswordHash(password, user.Password)
+	if !result {
+		return nil, errors.New("Contraseña invalida")
+	}
 
-  return &user,nil
+	return &user, nil
 
 }
-

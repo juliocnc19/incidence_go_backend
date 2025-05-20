@@ -4,6 +4,12 @@ import (
 	dto "incidence_grade/dto/incidents"
 	"incidence_grade/models"
 	"incidence_grade/repository"
+	"log"
+)
+
+const (
+	StatusInProgress = 1
+	StatusDraft      = 4
 )
 
 type Incident struct {
@@ -62,5 +68,41 @@ func (s *Incident) SaveFiles(filenames []string, incident_id uint) ([]models.Att
 		}
 		uploadedAttachments = append(uploadedAttachments, attachment)
 	}
-	return s.repo.SaveFile(uploadedAttachments)
+
+	// Save the files
+	attachments, err := s.repo.SaveFile(uploadedAttachments)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update incident status from draf to in_progress
+	incident, err := s.GetById(incident_id)
+	if err != nil {
+		log.Printf("Error getting incident %d: %v", incident_id, err)
+		return attachments, nil // Return attachments even if status update fails
+	}
+
+	if incident == nil {
+		log.Printf("Incident %d not found", incident_id)
+		return attachments, nil
+	}
+
+	if incident.StatusID == StatusDraft {
+		log.Printf("Updating incident %d status from draft to in_progress", incident_id)
+		updateDto := dto.UpdateIncidentDto{
+			Title:       incident.Title,
+			Description: incident.Description,
+			StatusID:    StatusInProgress,
+			Response:    incident.Response,
+			UserID:      incident.UserID,
+		}
+		_, err = s.Update(incident_id, updateDto)
+		if err != nil {
+			log.Printf("Error updating incident %d status: %v", incident_id, err)
+			return attachments, nil // Return attachments even if status update fails
+		}
+		log.Printf("Successfully updated incident %d status to in_progress", incident_id)
+	}
+
+	return attachments, nil
 }
