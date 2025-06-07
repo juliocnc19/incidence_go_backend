@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"incidence_grade/models"
+	"incidence_grade/utils"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -70,6 +71,39 @@ func seed(db *gorm.DB) {
 			} else {
 				fmt.Printf("Error al consultar estado %s: %v\n", status.Name, err)
 			}
+		}
+	}
+
+	adminRole := models.Role{}
+	if err := db.Where("name = ?", "admin").First(&adminRole).Error; err != nil {
+		fmt.Printf("Error al buscar rol admin: %v\n", err)
+		return
+	}
+
+	hashedPassword, err := utils.HashPassword("123456")
+	if err != nil {
+		fmt.Printf("Error al hashear password para admin: %v\n", err)
+		return
+	}
+
+	adminUser := models.User{
+		Username:  "admin",
+		Email:     "admin@gmail.com",
+		Password:  hashedPassword,
+		FirstName: "Admin",
+		LastName:  "User",
+		Cedula:    "0000000000",
+		RoleID:    adminRole.ID,
+	}
+
+	var existingAdminUser models.User
+	if err := db.Where("username = ?", adminUser.Username).First(&existingAdminUser).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			if err := db.Create(&adminUser).Error; err != nil {
+				fmt.Printf("Error al sembrar usuario admin: %v\n", err)
+			}
+		} else {
+			fmt.Printf("Error al consultar usuario admin: %v\n", err)
 		}
 	}
 }

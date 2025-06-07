@@ -68,12 +68,12 @@ func (r *UserRespository) Login(email string, password string) (*models.User, er
 	var user models.User
 	error := r.db.Where("email = ?", email).Preload("Role").First(&user).Error
 	if error != nil {
-		return nil, errors.New("Usuario no encontrado")
+		return nil, errors.New("usuario no encontrado")
 	}
 
 	result := utils.CheckPasswordHash(password, user.Password)
 	if !result {
-		return nil, errors.New("Contraseña invalida")
+		return nil, errors.New("contraseña invalida")
 	}
 
 	return &user, nil

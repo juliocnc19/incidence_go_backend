@@ -4,6 +4,8 @@ go 1.23.4
 
 require github.com/go-playground/validator v9.31.0+incompatible
 
+require github.com/resend/resend-go/v2 v2.20.0 // indirect
+
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect

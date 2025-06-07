@@ -20,9 +20,9 @@ func main() {
 	app.Use(logger.New(logger.Config{
 		Format: "[${ip}] ${status} ${method} ${path} ${latency}\n",
 	}))
-  app.Use(cors.New(cors.Config{
-    AllowOrigins:"*",
-  }))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+	}))
 
 	//db
 	environments := config.LoadEnviroments()
@@ -30,7 +30,7 @@ func main() {
 
 	//Repository
 	userRepo := repository.NewUserRepository(db)
-	incidentRepo := repository.NewIncidentRepository(db)
+	incidentRepo := repository.NewIncidentRepository(db, environments)
 	roleRepo := repository.NewRoleRepository(db)
 	statusRepo := repository.NewStatusRepository(db)
 	attachmentRepo := repository.NewAttachmentRepository(db)
