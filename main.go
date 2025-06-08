@@ -16,7 +16,9 @@ func main() {
 	if err := config.CreateDirectory(); err != nil {
 		log.Fatalf("Error inicializando directorio de uploads: %v", err)
 	}
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 100 * 1024 * 1024,
+	})
 	app.Use(logger.New(logger.Config{
 		Format: "[${ip}] ${status} ${method} ${path} ${latency}\n",
 	}))
