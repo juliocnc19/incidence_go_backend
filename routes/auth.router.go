@@ -5,6 +5,7 @@ import (
 	"incidence_grade/use_case"
 	"incidence_grade/utils"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +14,7 @@ import (
 
 var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
-func SetUpAuthRouters(app *fiber.App, user *use_case.User) {
+func SetUpAuthRouters(app *fiber.App, user *use_case.User, userToken *use_case.UserToken) {
 	auth := app.Group("/auth")
 
 	auth.Post("/", func(c *fiber.Ctx) error {
@@ -103,6 +104,55 @@ func SetUpAuthRouters(app *fiber.App, user *use_case.User) {
 			"data":   register,
 			"detail": "Usuario registrado",
 			"token":  tokenString,
+		})
+	})
+
+	auth.Post("/device-token", func(c *fiber.Ctx) error {
+		var input dto.DeviceTokenDto
+
+		if err := c.BodyParser(&input); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  "Datos inválidos",
+				"detail": err.Error(),
+			})
+		}
+
+		if err := utils.ValidateInput(input); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  "Error de validación",
+				"detail": err.Error(),
+			})
+		}
+
+		token, err := userToken.SaveDeviceToken(input)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  "Error al guardar el token del dispositivo",
+				"detail": err.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusCreated).JSON(token)
+	})
+
+	auth.Delete("/device-token/:id", func(c *fiber.Ctx) error {
+		id, err := strconv.ParseUint(c.Params("id"), 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "ID de token inválido",
+			})
+		}
+
+		err = userToken.DeleteDeviceToken(uint(id))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  "Error al eliminar el token del dispositivo",
+				"detail": err.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"message": "Token de dispositivo eliminado correctamente",
 		})
 	})
 }

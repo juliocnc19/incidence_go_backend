@@ -4,7 +4,10 @@ go 1.23.4
 
 require github.com/go-playground/validator v9.31.0+incompatible
 
-require github.com/resend/resend-go/v2 v2.20.0 // indirect
+require (
+	github.com/oliveroneill/exponent-server-sdk-golang v0.0.0-20210823140141-d050598be512 // indirect
+	github.com/resend/resend-go/v2 v2.20.0 // indirect
+)
 
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
@@ -12,7 +15,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.25.0 // indirect
-	github.com/gofiber/fiber/v2 v2.52.6 // indirect
+	github.com/gofiber/fiber/v2 v2.52.8 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect

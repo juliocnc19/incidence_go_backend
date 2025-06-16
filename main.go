@@ -36,6 +36,7 @@ func main() {
 	roleRepo := repository.NewRoleRepository(db)
 	statusRepo := repository.NewStatusRepository(db)
 	attachmentRepo := repository.NewAttachmentRepository(db)
+	userTokenRepo := repository.NewUserTokenRepository(db)
 
 	//Handler
 	user := use_case.NewUser(userRepo)
@@ -43,11 +44,12 @@ func main() {
 	role := use_case.NewRole(roleRepo)
 	status := use_case.NewStatus(statusRepo)
 	attachment := use_case.NewAttachment(attachmentRepo)
+	userToken := use_case.NewUserToken(userTokenRepo)
 
 	//Routers
 	routes.SetUpUserRouters(app, user)
 	routes.SetUpIncidentRouters(app, incident)
-	routes.SetUpAuthRouters(app, user)
+	routes.SetUpAuthRouters(app, user, userToken)
 	routes.SetUpRoleRouters(app, role)
 	routes.SetUpStatusRouters(app, status)
 	routes.SetUpAttachmentRouters(app, attachment)
