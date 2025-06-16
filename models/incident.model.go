@@ -12,7 +12,7 @@ type Incident struct {
 	Status      Status       `gorm:"foreignKey:StatusID" json:"status"`
 	Response    string       `gorm:"type:text" json:"response"`
 	UserID      uint         `gorm:"not null" json:"user_id"`
-	User        User         `gorm:"constraint:OnDelete:CASCADE;" gorm:"foreignKey:UserID" json:"user"`
+	User        User         `gorm:"constraint:OnDelete:CASCADE;foreignKey:UserID" json:"user"`
 	CreatedAt   time.Time    `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time    `gorm:"autoUpdateTime" json:"updated_at"`
 	Attachment  []Attachment `gorm:"constraint:OnDelete:CASCADE;" json:"attachment"`

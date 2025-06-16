@@ -6,6 +6,7 @@ import (
 	"incidence_grade/models"
 	"incidence_grade/utils"
 	"strconv"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +15,11 @@ const (
 	statusIDResolved uint = 2
 	statusIDRejected uint = 3
 	statusIDDraft    uint = 4
+)
+
+const (
+	typeIncidentADD = "Adicion"
+	typeIncidentRET = "Retiro"
 )
 
 type IncidentRepository struct {
@@ -26,6 +32,25 @@ func NewIncidentRepository(db *gorm.DB, config *config.Config) *IncidentReposito
 }
 
 func (r *IncidentRepository) Create(incident *models.Incident) (*models.Incident, error) {
+	if incident.Title == typeIncidentADD || incident.Title == typeIncidentRET {
+		MonthsAgo := time.Now().AddDate(0, -4, 0)
+		existingCount := int64(0)
+		err := r.db.Model(&models.Incident{}).
+			Where("user_id = ? AND title = ? AND created_at > ?",
+				incident.UserID,
+				incident.Title,
+				MonthsAgo).
+			Count(&existingCount).Error
+
+		if err != nil {
+			return nil, err
+		}
+
+		if existingCount > 0 {
+			return nil, fmt.Errorf("%s, solo una solicitud por semestre", incident.Title)
+		}
+	}
+
 	dbErr := r.db.Create(incident).Error
 	if dbErr != nil {
 		return nil, dbErr
