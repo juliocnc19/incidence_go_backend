@@ -18,7 +18,7 @@ const (
 )
 
 const (
-	typeIncidentADD = "Adicion"
+	typeIncidentADD = "Adición"
 	typeIncidentRET = "Retiro"
 )
 
