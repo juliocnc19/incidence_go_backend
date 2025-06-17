@@ -47,7 +47,7 @@ func (r *IncidentRepository) Create(incident *models.Incident) (*models.Incident
 		}
 
 		if existingCount > 0 {
-			return nil, fmt.Errorf("%s, solo una solicitud por semestre", incident.Title)
+			return nil, fmt.Errorf("%s, Solo una solicitud por semestre", incident.Title)
 		}
 	}
 
@@ -106,16 +106,15 @@ func (r *IncidentRepository) FindAll() ([]models.Incident, error) {
 func (r *IncidentRepository) Update(incident *models.Incident) (*models.Incident, error) {
 	if dbErr := r.db.
 		Model(&models.Incident{ID: incident.ID}).
-		Updates(incident). // This updates fields passed in 'incident'. Ensure StatusID is part of 'incident' if it's changing.
+		Updates(incident).
 		Error; dbErr != nil {
 		return nil, dbErr
 	}
 
-	// Fetch the updated incident with User and Status preloaded for email
 	incidentWithDetails, err := r.FindById(incident.ID)
 	if err != nil {
 		fmt.Printf("Error fetching incident details after update (ID: %d) for email: %v\n", incident.ID, err)
-		return incident, nil // Still return the incident as potentially modified
+		return incident, nil
 	}
 
 	if incidentWithDetails != nil && incidentWithDetails.User.Email != "" {
@@ -144,6 +143,25 @@ func (r *IncidentRepository) Update(incident *models.Incident) (*models.Incident
 			fmt.Printf("Error sending update email for incidence ID %d (status: %s): %v\n", incidentWithDetails.ID, statusStringToEmail, emailErr)
 		}
 
+		var userToken models.UserToken
+		if err := r.db.Where("user_id = ?", incidentWithDetails.UserID).First(&userToken).Error; err == nil {
+			notification := &utils.ExpoNotification{
+				Token: userToken.DeviceToken,
+				Title: "Cambio de estatus en incidencia",
+				Body:  fmt.Sprintf("Se ha cambiado el estatus de una incidencia a %s", statusStringToEmail),
+				Data: map[string]string{
+					"incidenceId": strconv.FormatUint(uint64(incidentWithDetails.ID), 10),
+					"status":      statusStringToEmail,
+				},
+			}
+
+			if _, err := utils.SendExpoNotification(notification); err != nil {
+				fmt.Printf("Error sending push notification for incidence ID %d: %v\n", incidentWithDetails.ID, err)
+			}
+		} else {
+			fmt.Printf("No device token found for user ID %d, cannot send push notification\n", incidentWithDetails.UserID)
+		}
+
 	} else {
 		if incidentWithDetails == nil {
 			fmt.Printf("Could not fetch incident details (ID: %d) after update for email.\n", incident.ID)
@@ -152,7 +170,7 @@ func (r *IncidentRepository) Update(incident *models.Incident) (*models.Incident
 		}
 	}
 
-	return incident, nil // Return the incident as potentially modified by Updates
+	return incident, nil
 }
 
 func (r *IncidentRepository) Delete(id uint) (map[string]interface{}, error) {

@@ -132,7 +132,10 @@ func SetUpAuthRouters(app *fiber.App, user *use_case.User, userToken *use_case.U
 			})
 		}
 
-		return c.Status(fiber.StatusCreated).JSON(token)
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+			"data":   token,
+			"detail": "Token guardado",
+		})
 	})
 
 	auth.Delete("/device-token/:id", func(c *fiber.Ctx) error {
@@ -152,7 +155,8 @@ func SetUpAuthRouters(app *fiber.App, user *use_case.User, userToken *use_case.U
 		}
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "Token de dispositivo eliminado correctamente",
+			"data":   nil,
+			"detail": "Token de dispositivo eliminado correctamente",
 		})
 	})
 }
