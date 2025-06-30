@@ -102,16 +102,53 @@ func SetUpUserRouters(app *fiber.App, user *use_case.User) {
 			})
 		}
 
-		userUpdated, error := user.Update(uint(idUserInt), input)
+		updatedUser, error := user.Update(uint(idUserInt), input)
 		if error != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error":  "Error al actualizar el usuario",
 				"detail": error.Error(),
 			})
 		}
+
 		return c.JSON(fiber.Map{
-			"data":   userUpdated,
-			"detail": "Usuario actualizado Correctamente",
+			"data":   updatedUser,
+			"detail": "Usuario Actualizado Correctamente",
+		})
+	})
+
+	// Cambiar contraseña
+	users.Put("/:id<int>/change-password", middleware.JWTMiddleware, func(c *fiber.Ctx) error {
+		var input dto.ChangePasswordDto
+
+		idUser := c.Params("id")
+		idUserInt, _ := strconv.Atoi(idUser)
+
+		errorParser := c.BodyParser(&input)
+		if errorParser != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  "Datos inválidos",
+				"detail": errorParser.Error(),
+			})
+		}
+
+		error := utils.ValidateInput(input)
+		if error != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  "Error de validación",
+				"detail": error.Error(),
+			})
+		}
+
+		err := user.ChangePassword(uint(idUserInt), input.NewPassword)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  "Error al cambiar la contraseña",
+				"detail": err.Error(),
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"detail": "Contraseña actualizada correctamente",
 		})
 	})
 

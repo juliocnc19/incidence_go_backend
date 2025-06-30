@@ -77,5 +77,11 @@ func (r *UserRespository) Login(email string, password string) (*models.User, er
 	}
 
 	return &user, nil
+}
 
+// UpdatePassword actualiza la contraseña de un usuario
+func (r *UserRespository) UpdatePassword(userID uint, hashedPassword string) error {
+	return r.db.Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("password", hashedPassword).Error
 }

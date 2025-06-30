@@ -79,3 +79,12 @@ func (s *User) Register(input authDto.RegisterUserDto) (*models.User, error) {
 	}
 	return s.repo.Create(user)
 }
+
+// ChangePassword actualiza la contraseña de un usuario
+func (s *User) ChangePassword(userID uint, newPassword string) error {
+	hashedPassword, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+	return s.repo.UpdatePassword(userID, hashedPassword)
+}
